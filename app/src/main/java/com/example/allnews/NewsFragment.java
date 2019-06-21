@@ -34,7 +34,8 @@ public class NewsFragment extends Fragment {
     RecyclerView mRecyclerView;
     NewsAdapter mNewsAdapter;
 
-    NewsSource mSource;
+    int mIndex;
+    Call<NewsSource> call;
 
 
     public NewsFragment() {
@@ -48,6 +49,7 @@ public class NewsFragment extends Fragment {
         NewsFragment newsFragment = new NewsFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("index", index);
+        newsFragment.setArguments(bundle);
         return newsFragment;
     }
 
@@ -63,18 +65,28 @@ public class NewsFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setHasFixedSize(true);
 
+        mIndex = getArguments().getInt("index");
+
 
         NewsAPI newsAPI = RetrofitInstance
                 .getRetrofitInstance().create(NewsAPI.class);
-//
-//        mSource = getArguments().getParcelable("source");
-//        mArticles = mSource.getArticles();
-        //Log.d(TAG, "onResponse: " + mSource.getArticles().get(3).getTitle());
-//        initRecycleView();
 
+        switch (mIndex) {
+            case 0:
+                call = newsAPI.getNytimesNews();
+                break;
+            case 1:
+                call = newsAPI.getBbcNews();
+                break;
+            case 2:
+                call = newsAPI.getWsjNews();
+                break;
 
+            default:
+                call = newsAPI.getNytimesNews();
+                break;
 
-        Call<NewsSource> call =newsAPI.getWsjNews();
+        }
 
         call.enqueue(new Callback<NewsSource>() {
             @Override
@@ -103,24 +115,3 @@ public class NewsFragment extends Fragment {
 
 }
 
-
-
-//
-//    Call<NewsSource> call;
-//    int index = 0;
-//        switch (index) {
-//                case 0:
-//                call = newsAPI.getWsjNews();
-//                break;
-//                case 1:
-//                call = newsAPI.getBbcNews();
-//                break;
-//                case 2:
-//                call = newsAPI.getNytimesNews();
-//                break;
-//
-//default:
-//        call = newsAPI.getWsjNews();
-//
-//
-//        }
