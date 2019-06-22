@@ -1,14 +1,19 @@
 package com.example.allnews;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.allnews.adapter.NewsAdapter;
 import com.example.allnews.model.NewsSource;
@@ -26,7 +31,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NewsFragment extends Fragment {
+public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnclickHandler {
 
     private static final String TAG = "NewsFragment";
 
@@ -43,7 +48,7 @@ public class NewsFragment extends Fragment {
         Log.d(TAG, "NewsFragment: ");
     }
 
-    public static NewsFragment newInstance(int index){
+    public static NewsFragment newInstance(int index) {
 
 
         NewsFragment newsFragment = new NewsFragment();
@@ -64,6 +69,7 @@ public class NewsFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.news_rv);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setHasFixedSize(true);
+        setHasOptionsMenu(true);
 
         mIndex = getArguments().getInt("index");
 
@@ -109,9 +115,41 @@ public class NewsFragment extends Fragment {
     }
 
     private void initRecycleView() {
-        mNewsAdapter = new NewsAdapter(getContext(), mArticles);
+        mNewsAdapter = new NewsAdapter(getContext(), mArticles, this);
         mRecyclerView.setAdapter(mNewsAdapter);
     }
 
+    @Override
+    public void onItemClick(Articles article) {
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("article", article);
+
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtras(bundle);
+
+        startActivity(intent);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.favorites){
+            Toast.makeText(getActivity(), "favorite clicked",
+                    Toast.LENGTH_LONG).show();
+
+
+        }else {
+            Toast.makeText(getActivity(), "sign out clicked",
+                    Toast.LENGTH_LONG).show();
+        }
+        return true;
+    }
 }
 
