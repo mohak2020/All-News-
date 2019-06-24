@@ -154,17 +154,17 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_favorite_border_black_24dp"
+        android:src="@drawable/ic_favorite_black_24dp"
         app:layout_anchor="@id/appBar"
         app:layout_anchorGravity="bottom|left" />
 
-    <ImageView
-        android:id="@+id/unfav_view"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_favorite_border_black_24dp"
-        app:layout_anchor="@id/appBar"
-        app:layout_anchorGravity="bottom|center" />
+    <!--<ImageView-->
+        <!--android:id="@+id/unfav_view"-->
+        <!--android:layout_width="50dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:src="@drawable/ic_favorite_border_black_24dp"-->
+        <!--app:layout_anchor="@id/appBar"-->
+        <!--app:layout_anchorGravity="bottom|center_horizontal" />-->
 
 </android.support.design.widget.CoordinatorLayout>

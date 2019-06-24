@@ -67,7 +67,7 @@ public class DetailActivity extends AppCompatActivity {
         mPhotoView = (ImageView) findViewById(R.id.photo);
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsingToolbar);
         mFavoriteView = (ImageView) findViewById(R.id.fav_view);
-        mUnFavView = (ImageView) findViewById(R.id.unfav_view);
+        //mUnFavView = (ImageView) findViewById(R.id.unfav_view);
 
         EditText editText = (EditText) findViewById(R.id.add_comment);
 
@@ -160,7 +160,7 @@ public class DetailActivity extends AppCompatActivity {
         };
         mDatabaseReference.addChildEventListener(mChildEventListener);
 
-        mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+        //mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
 
 
         mFavoriteView.setOnClickListener(new View.OnClickListener() {
@@ -170,11 +170,16 @@ public class DetailActivity extends AppCompatActivity {
                 Log.d(TAG, "onClick: ");
 
 
-                    //mDatabaseReference.child(article.getTitle()).setValue(article);
+
+
+                    //mDatabaseReference.child(article.getTitle()).setValue(article);lse
+
+                    mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+
                     pushId = mDatabaseReference.child(article.getTitle()).getKey();
                     mDatabaseReference.child(pushId).setValue(article);
                     //pushId = mDatabaseReference.push().getKey();
-                    Log.d(TAG, "onClick: true " + pushId);
+                    //Log.d(TAG, "onClick: true " + pushId);
                     //addedToFav = false;
                     mFavoriteView.setImageResource(R.drawable.ic_favorite_black_24dp);
 
@@ -196,14 +201,14 @@ public class DetailActivity extends AppCompatActivity {
 
         });
 
-        mUnFavView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDatabaseReference.child(article.getTitle()).removeValue();
-               // mNewsAdapter.notifyDataSetChanged();
-
-            }
-        });
+//        mUnFavView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mDatabaseReference.child(article.getTitle()).removeValue();
+//               // mNewsAdapter.notifyDataSetChanged();
+//
+//            }
+//        });
 
     }
 

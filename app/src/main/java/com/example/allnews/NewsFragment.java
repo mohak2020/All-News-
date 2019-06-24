@@ -3,8 +3,6 @@ package com.example.allnews;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,9 +20,8 @@ import com.example.allnews.model.NewsSource;
 import com.example.allnews.model.articles.Articles;
 import com.example.allnews.network.NewsAPI;
 import com.example.allnews.network.RetrofitInstance;
+
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -41,7 +38,7 @@ import retrofit2.Response;
 public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnclickHandler {
 
     private static final String TAG = "NewsFragment";
-
+    NewsSource mNewsSource;
     ArrayList<Articles> mArticles;
     RecyclerView mRecyclerView;
     NewsAdapter mNewsAdapter;
@@ -105,21 +102,37 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
 
         }
 
+
+
         call.enqueue(new Callback<NewsSource>() {
             @Override
             public void onResponse(Call<NewsSource> call, Response<NewsSource> response) {
 
-                NewsSource newsSource = response.body();
-                Log.d(TAG, "onResponse: " + newsSource.getArticles().get(3).getTitle());
+                 NewsSource newsSource = response.body();
+                Log.d(TAG, "onResponse: " + newsSource.getArticles().get(0).getTitle());
                 mArticles = newsSource.getArticles();
+                mNewsSource = newsSource;
+                //Log.d(TAG, "onCreateView: "+ mArticles.get(0).getTitle());
                 initRecycleView();
+                //onSucess(newsSource);
+
+//                if (response.isSuccessful()){
+//                    onSucess(newsSource);
+//                }
+
             }
 
             @Override
             public void onFailure(Call<NewsSource> call, Throwable t) {
 
             }
+
+
+
         });
+
+        //WidgetUtils.updateWidgetsData(getActivity(), mNewsSource);
+        //Log.d(TAG, "onCreateView: "+ mArticles.get(0).getTitle());
 
 
 
@@ -132,6 +145,16 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
         mRecyclerView.setAdapter(mNewsAdapter);
 
     }
+
+    boolean flag =true;
+    private void onSucess(NewsSource newsSource){
+        if(flag) {
+           // WidgetUtils.updateWidgetsData(getActivity(), newsSource);
+            Log.d(TAG, "onSucess: " + newsSource.getArticles().get(1).getTitle());
+            flag =false;
+        }
+    }
+
 
     @Override
     public void onItemClick(Articles article) {
