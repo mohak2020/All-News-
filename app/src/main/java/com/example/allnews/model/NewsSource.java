@@ -16,6 +16,10 @@ public class NewsSource implements Parcelable {
         articles = in.createTypedArrayList(Articles.CREATOR);
     }
 
+    public NewsSource(){
+
+    }
+
     public static final Creator<NewsSource> CREATOR = new Creator<NewsSource>() {
         @Override
         public NewsSource createFromParcel(Parcel in) {

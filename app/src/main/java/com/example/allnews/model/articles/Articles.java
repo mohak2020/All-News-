@@ -19,6 +19,10 @@ public class Articles implements Parcelable {
         content = in.readString();
     }
 
+    public Articles() {
+
+    }
+
     public static final Creator<Articles> CREATOR = new Creator<Articles>() {
         @Override
         public Articles createFromParcel(Parcel in) {

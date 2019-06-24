@@ -89,5 +89,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             Articles article = mArticles.get(index);
             mHandler.onItemClick(article);
         }
+
+
+    }
+
+    public void setNewsFavorite(Articles article){
+
+        mArticles.add(article);
+        notifyDataSetChanged();
     }
 }
