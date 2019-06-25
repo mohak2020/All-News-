@@ -45,7 +45,6 @@ public class FavoriteActivity extends AppCompatActivity implements NewsAdapter.N
 
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mFirebaseDatabase.setPersistenceEnabled(true);
         mDatabaseReference = mFirebaseDatabase.getReference().child("articles");
 
 
@@ -56,9 +55,6 @@ public class FavoriteActivity extends AppCompatActivity implements NewsAdapter.N
                 Articles articles = dataSnapshot.getValue(Articles.class);
 
                     mArticles.add(articles);
-
-
-
 
                 Log.d(TAG, "onChildAdded: " + articles.getTitle());
                 initRecycleView();
@@ -95,7 +91,7 @@ public class FavoriteActivity extends AppCompatActivity implements NewsAdapter.N
 
             }
         };
-       // mDatabaseReference.addChildEventListener(mChildEventListener);
+        mDatabaseReference.addChildEventListener(mChildEventListener);
 
 
 
