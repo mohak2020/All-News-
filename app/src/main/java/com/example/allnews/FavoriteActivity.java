@@ -45,14 +45,19 @@ public class FavoriteActivity extends AppCompatActivity implements NewsAdapter.N
 
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseDatabase.setPersistenceEnabled(true);
         mDatabaseReference = mFirebaseDatabase.getReference().child("articles");
+
 
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 Articles articles = dataSnapshot.getValue(Articles.class);
-                mArticles.add(articles);
+
+                    mArticles.add(articles);
+
+
 
 
                 Log.d(TAG, "onChildAdded: " + articles.getTitle());
@@ -66,13 +71,16 @@ public class FavoriteActivity extends AppCompatActivity implements NewsAdapter.N
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Articles articles = dataSnapshot.getValue(Articles.class);
                 Log.d(TAG, "onChildChanged: ");
-                initRecycleView();
+//                mArticles.remove(dataSnapshot.getValue(Articles.class));
+//                initRecycleView();
 
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+//                mArticles.remove(dataSnapshot.getValue(Articles.class));
+//                mNewsAdapter.notifyDataSetChanged();
+//                initRecycleView();
 
 
             }
@@ -87,7 +95,7 @@ public class FavoriteActivity extends AppCompatActivity implements NewsAdapter.N
 
             }
         };
-        mDatabaseReference.addChildEventListener(mChildEventListener);
+       // mDatabaseReference.addChildEventListener(mChildEventListener);
 
 
 
@@ -116,7 +124,65 @@ public class FavoriteActivity extends AppCompatActivity implements NewsAdapter.N
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: ");
+//        mArticles = new ArrayList<>();
+//        mRecyclerView = findViewById(R.id.favorite_rv);
+//        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        mRecyclerView.setHasFixedSize(true);
+//        mFirebaseDatabase = FirebaseDatabase.getInstance();
+//        mFirebaseDatabase.setPersistenceEnabled(true);
+//        mDatabaseReference = mFirebaseDatabase.getReference().child("articles");
+//
+//        mChildEventListener = new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                Articles articles = dataSnapshot.getValue(Articles.class);
+//                mArticles.add(articles);
+//
+//
+//                Log.d(TAG, "onChildAdded: " + articles.getTitle());
+//                initRecycleView();
+//
+//
+//
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                Articles articles = dataSnapshot.getValue(Articles.class);
+//                Log.d(TAG, "onChildChanged: ");
+//                initRecycleView();
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//                mNewsAdapter.notifyDataSetChanged();
+//                initRecycleView();
+//
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        };
+//        mDatabaseReference.addChildEventListener(mChildEventListener);
 
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+       // mDatabaseReference.addChildEventListener(mChildEventListener);
     }
 }

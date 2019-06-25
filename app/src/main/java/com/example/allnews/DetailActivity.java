@@ -23,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         final Articles article = intent.getParcelableExtra("article");
+
 
         Log.d(TAG, "onCreate: ");
 
@@ -129,15 +131,36 @@ public class DetailActivity extends AppCompatActivity {
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d(TAG, "onChildAdded: ");
-//                Articles articles = dataSnapshot.getValue(Articles.class);
-//                ArrayList<Articles> arrayList = new ArrayList<>();
-//                arrayList.add(articles);
+                // Log.d(TAG, "onChildAdded: ");
+                Articles articles = dataSnapshot.getValue(Articles.class);
+                ArrayList<String> stringArrayList = new ArrayList<>();
+                stringArrayList.add(articles.getTitle());
+
+
+
+                Log.d(TAG, "onChildAdded children:  "+ dataSnapshot.getChildren());
+
+                if (stringArrayList.contains(article.getTitle())) {
+                    Log.d(TAG, "onChildAdded Array:  "+stringArrayList.get(0));
+                    mFavoriteView.setImageResource(R.drawable.ic_favorite_black_24dp);
+                } else {
+                    Log.d(TAG, "onChildAdded else:   "+ stringArrayList.get(0));
+                    //mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                }
+
+                Log.d(TAG, "onChildAdded: " + articles.getTitle());
+
+//                if(article.getTitle().equals(articles)){
+//                    //mFavoriteView.setImageResource(R.drawable.ic_favorite_black_24dp);
+//                }else{
+//                    mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+//                }
+
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d(TAG, "onChildChanged: ");
+                Log.d(TAG, "onChildChanged: " + dataSnapshot.getValue(Articles.class).getTitle());
             }
 
             @Override
@@ -162,27 +185,37 @@ public class DetailActivity extends AppCompatActivity {
 
         //mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
 
+        //Query query
+
 
         mFavoriteView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Log.d(TAG, "onClick: ");
+                Log.d(TAG, "onClick: first click " + pushId);
 
+                //mDatabaseReference.child(article.getTitle()).setValue(article);lse
 
+                //String push = mDatabaseReference.child(article.getTitle()).getKey();
 
+                if (pushId == null) {
 
-                    //mDatabaseReference.child(article.getTitle()).setValue(article);lse
-
-                    mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-
+                    Log.d(TAG, "onClick: " + article.getTitle());
+                    Log.d(TAG, "pushId: " + pushId);
+                    mFavoriteView.setImageResource(R.drawable.ic_favorite_black_24dp);
                     pushId = mDatabaseReference.child(article.getTitle()).getKey();
                     mDatabaseReference.child(pushId).setValue(article);
                     //pushId = mDatabaseReference.push().getKey();
                     //Log.d(TAG, "onClick: true " + pushId);
                     //addedToFav = false;
-                    mFavoriteView.setImageResource(R.drawable.ic_favorite_black_24dp);
 
+
+                } else {
+                    Log.d(TAG, "onClick: else" + pushId);
+                    mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    mDatabaseReference.child(article.getTitle()).removeValue();
+                    pushId = null;
+                }
 
 
 //
@@ -194,7 +227,6 @@ public class DetailActivity extends AppCompatActivity {
 //                    mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
 //
 //                }
-
 
 
             }
