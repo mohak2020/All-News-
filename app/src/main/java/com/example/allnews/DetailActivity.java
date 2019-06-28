@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.example.allnews.adapter.NewsAdapter;
 import com.example.allnews.model.articles.Articles;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -123,9 +125,11 @@ public class DetailActivity extends AppCompatActivity {
 
         //
 
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("articles");
+        mDatabaseReference = mFirebaseDatabase.getReference().child(user.getUid());
+
+        Log.d(TAG, "onCreate:user id "+ user.getUid());
 
 
         mChildEventListener = new ChildEventListener() {
@@ -200,10 +204,17 @@ public class DetailActivity extends AppCompatActivity {
 
                 if (pushId == null) {
 
+                    if(mFavoriteView.getDrawable().getConstantState() == getResources().getDrawable(R.drawable.ic_favorite_black_24dp).getConstantState()){
+                        Log.d(TAG, "onClick: its red");
+                        mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    }
+
                     Log.d(TAG, "onClick: " + article.getTitle());
                     Log.d(TAG, "pushId: " + pushId);
                     mFavoriteView.setImageResource(R.drawable.ic_favorite_black_24dp);
-                    pushId = mDatabaseReference.child(article.getTitle()).getKey();
+                    article.getTitle().replace(".","");
+
+                    pushId = mDatabaseReference.child(EncodeString(article.getTitle())).getKey();
                     mDatabaseReference.child(pushId).setValue(article);
                     //pushId = mDatabaseReference.push().getKey();
                     //Log.d(TAG, "onClick: true " + pushId);
@@ -213,7 +224,7 @@ public class DetailActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "onClick: else" + pushId);
                     mFavoriteView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                    mDatabaseReference.child(article.getTitle()).removeValue();
+                    mDatabaseReference.child(EncodeString(article.getTitle())).removeValue();
                     pushId = null;
                 }
 
@@ -242,6 +253,10 @@ public class DetailActivity extends AppCompatActivity {
 //            }
 //        });
 
+    }
+
+    public static String EncodeString(String string) {
+        return string.replace(".", ",");
     }
 
 }

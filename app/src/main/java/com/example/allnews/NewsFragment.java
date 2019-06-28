@@ -1,8 +1,11 @@
 package com.example.allnews;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,15 +24,22 @@ import com.example.allnews.model.articles.Articles;
 import com.example.allnews.network.NewsAPI;
 import com.example.allnews.network.RetrofitInstance;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -38,6 +48,7 @@ import retrofit2.Response;
 public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnclickHandler {
 
     private static final String TAG = "NewsFragment";
+    public static final int RC_SIGN_IN = 1;
     NewsSource mNewsSource;
     ArrayList<Articles> mArticles;
     RecyclerView mRecyclerView;
@@ -49,6 +60,9 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ChildEventListener mChildEventListener;
+
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
 
     public NewsFragment() {
@@ -66,12 +80,59 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
         return newsFragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
+//        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+//
+//
+//
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//
+//                FirebaseUser user = firebaseAuth.getCurrentUser();
+////               Log.d(TAG, "onAuthStateChanged: "+user.getEmail());
+//
+//                if (user != null) {
+//                    //Log.d(TAG, "onAuthStateChanged: "+user.getEmail());
+//                    onSignedInInitialize();
+//                    Toast.makeText(getActivity(), "You're now signed in. Welcome to News App.", Toast.LENGTH_SHORT).show();
+//
+//                } else {
+//
+//
+//                    startActivityForResult(
+//                            AuthUI.getInstance()
+//                                    .createSignInIntentBuilder()
+//                                    .setIsSmartLockEnabled(false)
+//                                    .setAvailableProviders(Arrays.asList(
+//
+//                                            new AuthUI.IdpConfig.EmailBuilder().build()
+//                                    ))
+//                                    .build(),
+//                            RC_SIGN_IN);
+//
+//                }
+//
+//                // RC_SIGN_IN
+//
+//            }
+//        };
+
+
+    }
+    
+    
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news, container, false);
+
+        Log.d(TAG, "onCreateView: called");
 
         mArticles = new ArrayList<>();
         mRecyclerView = view.findViewById(R.id.news_rv);
@@ -95,7 +156,6 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
             case 2:
                 call = newsAPI.getWsjNews();
                 break;
-
             default:
                 call = newsAPI.getNytimesNews();
                 break;
@@ -103,12 +163,11 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
         }
 
 
-
         call.enqueue(new Callback<NewsSource>() {
             @Override
             public void onResponse(Call<NewsSource> call, Response<NewsSource> response) {
 
-                 NewsSource newsSource = response.body();
+                NewsSource newsSource = response.body();
                 Log.d(TAG, "onResponse: " + newsSource.getArticles().get(0).getTitle());
                 mArticles = newsSource.getArticles();
                 mNewsSource = newsSource;
@@ -128,17 +187,74 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
             }
 
 
-
         });
 
         //WidgetUtils.updateWidgetsData(getActivity(), mNewsSource);
         //Log.d(TAG, "onCreateView: "+ mArticles.get(0).getTitle());
 
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
+//        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+//
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//
+//                FirebaseUser user = firebaseAuth.getCurrentUser();
+////               Log.d(TAG, "onAuthStateChanged: "+user.getEmail());
+//
+//               if (user != null) {
+//                   //Log.d(TAG, "onAuthStateChanged: "+user.getEmail());
+//                   onSignedInInitialize();
+//                   Toast.makeText(getActivity(), "You're now signed in. Welcome to News App.", Toast.LENGTH_SHORT).show();
+//
+//                } else {
+//
+//
+//                    startActivityForResult(
+//                            AuthUI.getInstance()
+//                                    .createSignInIntentBuilder()
+//                                    .setIsSmartLockEnabled(false)
+//                                    .setAvailableProviders(Arrays.asList(
+//
+//                                            new AuthUI.IdpConfig.EmailBuilder().build()
+//                                    ))
+//                                    .build(),
+//                            RC_SIGN_IN);
+//
+//                }
+//
+//                // RC_SIGN_IN
+//
+//            }
+//        };
 
 
         return view;
     }
+
+    private void onSignedInInitialize() {
+        
+        
+        
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_OK) {
+                // Sign-in succeeded, set up the UI
+                Toast.makeText(getContext(), "Signed in!", Toast.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                // Sign in was canceled by the user, finish the activity
+                Toast.makeText(getContext(), "Sign in canceled", Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+            }
+        }
+    }
+
+
 
     private void initRecycleView() {
         mNewsAdapter = new NewsAdapter(getContext(), mArticles, this);
@@ -146,12 +262,13 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
 
     }
 
-    boolean flag =true;
-    private void onSucess(NewsSource newsSource){
-        if(flag) {
-           // WidgetUtils.updateWidgetsData(getActivity(), newsSource);
+    boolean flag = true;
+
+    private void onSucess(NewsSource newsSource) {
+        if (flag) {
+            // WidgetUtils.updateWidgetsData(getActivity(), newsSource);
             Log.d(TAG, "onSucess: " + newsSource.getArticles().get(1).getTitle());
-            flag =false;
+            flag = false;
         }
     }
 
@@ -177,21 +294,42 @@ public class NewsFragment extends Fragment implements NewsAdapter.NewsAdapterOnc
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (item.getItemId() == R.id.favorites){
+        if (item.getItemId() == R.id.favorites) {
             Toast.makeText(getActivity(), "favorite clicked",
                     Toast.LENGTH_LONG).show();
 
-            Intent intent = new Intent(getActivity(),FavoriteActivity.class);
+            Intent intent = new Intent(getActivity(), FavoriteActivity.class);
             startActivity(intent);
 
 
-        }else {
+        } else {
             Toast.makeText(getActivity(), "sign out clicked",
                     Toast.LENGTH_LONG).show();
+            AuthUI.getInstance().signOut(getContext());
+            getActivity().finish();
         }
         return true;
 
     }
+
+
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        Log.d(TAG, "onResume: ");
+//        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+//    }
+//
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        Log.d(TAG, "onPause: ");
+//        mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+//    }
+
+
 }
 
 
